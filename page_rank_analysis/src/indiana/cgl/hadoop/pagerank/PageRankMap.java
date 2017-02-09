@@ -16,25 +16,31 @@ public class PageRankMap extends Mapper<LongWritable, Text, LongWritable, Text> 
 	// key: file offset
 	// value: <sourceUrl PageRank#targetUrls>
 	public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-		int numUrls = context.getConfiguration().getInt("numUrls", 1);
+		//int numUrls = context.getConfiguration().getInt("numUrls", 1);
 		String line = value.toString();
-		LOGGER.info("Text value for " + key + " >> " + line);
-		StringBuffer sb = new StringBuffer();
 		// instance an object that records the information for one webpage
 		RankRecord rrd = new RankRecord(line);
 		// int sourceUrl, targetUrl;
 		// double rankValueOfSrcUrl;
 		if (rrd.targetUrlsList.size() <= 0) {
 			// there is no out degree for this webpage;
-			// scatter its rank value to all other urls
-			double rankValuePerUrl = rrd.rankValue / (double) numUrls;
-			for (int i = 0; i < numUrls; i++) {
-				context.write(new LongWritable(i), new Text(String.valueOf(rankValuePerUrl)));
-			}
+			// scatter its rank value to all other urls -- Why?? I can't see any
+			// reason for this, commenting it out for now --TODO 
+			/*
+			 * double rankValuePerUrl = rrd.rankValue / (double) numUrls; for
+			 * (int i = 0; i < numUrls; i++) { context.write(new
+			 * LongWritable(i), new Text(String.valueOf(rankValuePerUrl))); }
+			 */
+			LOGGER.info("Source Url " + rrd.sourceUrl + " has no outgoing links ! ");
 		} else {
-			/* Write your code here */
-		} // for
-		context.write(new LongWritable(rrd.sourceUrl), new Text(sb.toString()));
+			for (Integer targetUrl : rrd.targetUrlsList) {
+				context.write(new LongWritable(targetUrl),
+						new Text(String.valueOf(rrd.sourceUrl + "#" + String.valueOf(rrd.rankValue))));
+			}
+		}
+		context.write(new LongWritable(rrd.sourceUrl),
+				new Text(String.valueOf(rrd.sourceUrl + "#" + String.valueOf(rrd.rankValue))));
+
 	} // end map
 
 }

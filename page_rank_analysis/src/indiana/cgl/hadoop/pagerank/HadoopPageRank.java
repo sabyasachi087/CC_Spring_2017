@@ -137,7 +137,8 @@ public class HadoopPageRank extends Configured implements Tool {
 			System.out.println("Hadoop CleanUptResults failed, exit...");
 			System.exit(-1);
 		}
-
+		// Added for deleting last intermediate result
+		fs.delete(new Path(String.valueOf(outputIndex)), true);
 		double executionTime = (System.currentTimeMillis() - startTime) / 1000.0;
 		System.out.println("########################################################");
 		System.out.println("#   Hadoop PageRank Job take " + executionTime + " sec.");
