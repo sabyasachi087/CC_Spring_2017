@@ -12,6 +12,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -23,6 +24,7 @@ import indiana.cgl.hadoop.pagerank.helper.CleanupResultsMap;
 import indiana.cgl.hadoop.pagerank.helper.CleanupResultsReduce;
 import indiana.cgl.hadoop.pagerank.helper.CreateGraphMap;
 import indiana.cgl.hadoop.pagerank.helper.CreateGraphReduce;
+import indiana.cgl.hadoop.pagerank.helper.PRWritable;
 
 public class HadoopPageRank extends Configured implements Tool {
 
@@ -123,8 +125,8 @@ public class HadoopPageRank extends Configured implements Tool {
 		job3.setJarByClass(HadoopPageRank.class);
 		job3.setMapperClass(CleanupResultsMap.class);
 		job3.setReducerClass(CleanupResultsReduce.class);
-		job3.setOutputKeyClass(LongWritable.class);
-		job3.setOutputValueClass(Text.class);
+		job3.setOutputKeyClass(PRWritable.class);
+		job3.setOutputValueClass(DoubleWritable.class);
 
 		FileInputFormat.setInputPaths(job3, new Path(String.valueOf(outputIndex)));
 		FileOutputFormat.setOutputPath(job3, new Path(String.valueOf(outputDir)));

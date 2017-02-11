@@ -28,7 +28,7 @@ public class TestPageRankAnalysis {
 			this.pageRank.testMapReduce();
 			this.cleanUp.testMapReduce();
 
-			InMemoryDataStore.print(InMemoryDataStore.getCleanUpOutput());
+			InMemoryDataStore.print();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
