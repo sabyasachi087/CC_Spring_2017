@@ -24,7 +24,10 @@ import indiana.cgl.hadoop.pagerank.helper.CleanupResultsMap;
 import indiana.cgl.hadoop.pagerank.helper.CleanupResultsReduce;
 import indiana.cgl.hadoop.pagerank.helper.CreateGraphMap;
 import indiana.cgl.hadoop.pagerank.helper.CreateGraphReduce;
+
+
 import indiana.cgl.hadoop.pagerank.helper.PRWritable;
+
 
 public class HadoopPageRank extends Configured implements Tool {
 
@@ -127,6 +130,7 @@ public class HadoopPageRank extends Configured implements Tool {
 		job3.setReducerClass(CleanupResultsReduce.class);
 		job3.setOutputKeyClass(PRWritable.class);
 		job3.setOutputValueClass(DoubleWritable.class);
+
 
 		FileInputFormat.setInputPaths(job3, new Path(String.valueOf(outputIndex)));
 		FileOutputFormat.setOutputPath(job3, new Path(String.valueOf(outputDir)));

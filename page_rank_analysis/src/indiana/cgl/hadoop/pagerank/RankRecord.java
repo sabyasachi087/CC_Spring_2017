@@ -3,6 +3,7 @@ package indiana.cgl.hadoop.pagerank;
 import java.util.ArrayList;
 
 public class RankRecord {
+
 	public Long sourceUrl;
 	public double rankValue;
 	public ArrayList<Long> targetUrlsList;

@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
+
 import org.apache.log4j.Logger;
 
 public class PageRankReduce extends Reducer<LongWritable, Text, LongWritable, Text> {
@@ -17,6 +18,7 @@ public class PageRankReduce extends Reducer<LongWritable, Text, LongWritable, Te
 		StringBuilder targetUrlsList = new StringBuilder();
 
 		int numUrls = context.getConfiguration().getInt("numUrls", 1);
+
 		double selfRank = 0.0;
 		// hints each tuple may include: rank value tuple or link relation tuple
 		for (Text value : values) {
@@ -40,5 +42,6 @@ public class PageRankReduce extends Reducer<LongWritable, Text, LongWritable, Te
 		} else {
 			context.write(key, new Text(sumOfRankValues + "#" + targetUrlsList.toString()));
 		}
+
 	}
 }

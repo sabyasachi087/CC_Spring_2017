@@ -17,7 +17,7 @@ public class TemperatureDataReducer extends Reducer<Text, DoubleWritable, Text, 
 			throws IOException, InterruptedException {
 		Double min = Double.MAX_VALUE, max = Double.MIN_VALUE, avg = 0.0d, sd = 0.0d;
 		int counter = 0;
-		List<Double> tempDataList = new ArrayList<>();
+		List<Double> tempDataList = new ArrayList<Double>();
 		for (DoubleWritable tempData_dw : values) {
 			min = Math.min(min, tempData_dw.get());
 			max = Math.max(max, tempData_dw.get());
