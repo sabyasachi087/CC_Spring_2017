@@ -19,7 +19,7 @@ public class TDAExecuter {
 			System.exit(-1);
 		}
 		Configuration conf = new Configuration();
-		Job job = new Job(conf);
+		Job job = Job.getInstance(conf);
 		job.setJarByClass(TDAExecuter.class);
 		job.setJobName("Max temperature");
 		FileInputFormat.addInputPath(job, new Path(args[0]));
