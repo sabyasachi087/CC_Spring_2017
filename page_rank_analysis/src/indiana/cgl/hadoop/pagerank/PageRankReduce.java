@@ -41,10 +41,14 @@ public class PageRankReduce extends Reducer<LongWritable, Text, LongWritable, Te
 
 			}
 		} // end for loop
-		sumOfRankValues = (0.85 * sumOfRankValues) + 0.15 * ((1.0) / (double) numUrls);
-		if (sourceUrlsList.length() == 0) {
-			LOGGER.info("Key  " + key.get() + " has no source !!Assigning self rank ...  ");
+		if (sumOfRankValues > 0) {
+			sumOfRankValues = (0.85 * sumOfRankValues) + 0.15 * ((1.0) / (double) numUrls);
+		} else {
 			sumOfRankValues = selfRank;
+		}
+
+		if (targetUrlList.length() == 0) {
+			LOGGER.info("Key  " + key.get() + " has no source !!Assigning self rank ...  ");
 			context.write(key, new Text(String.valueOf(sumOfRankValues)));
 		} else {
 			context.write(key, new Text(sumOfRankValues + targetUrlList.toString()));
