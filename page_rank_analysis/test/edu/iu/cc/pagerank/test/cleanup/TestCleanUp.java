@@ -31,6 +31,8 @@ public class TestCleanUp {
 	}
 
 	public void testMapReduce() throws IOException {
+		System.out.println("Started Clean Up and Sorting Activity with data size =  "
+				+ InMemoryDataStore.getPageRankOutput().size());
 		this.mapReduceDriver.withAll(InMemoryDataStore.getPageRankOutput()).getConfiguration().setInt("numUrls", 11);
 		List<Pair<LongWritable, DoubleWritable>> output = this.mapReduceDriver.run();
 		InMemoryDataStore.addCleanOutput(output);

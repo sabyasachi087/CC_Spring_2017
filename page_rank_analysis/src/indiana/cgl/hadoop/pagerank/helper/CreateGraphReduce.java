@@ -10,7 +10,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 public class CreateGraphReduce extends Reducer<LongWritable, Text, LongWritable, Text> {
 
-	private static final Log log = LogFactory.getLog(CreateGraphReduce.class);
+	private static final Log LOGGER = LogFactory.getLog(CreateGraphReduce.class);
 
 	public void reduce(LongWritable key, Iterable<Text> values, Context context) throws IOException {
 
@@ -18,11 +18,9 @@ public class CreateGraphReduce extends Reducer<LongWritable, Text, LongWritable,
 
 			Text outputValue = values.iterator().next();
 			context.write(key, outputValue);
-			// check the value of reduce
-			System.out.println("values.iterator().next() = " + outputValue);
-			log.info("values.iterator().next() = " + outputValue);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+			LOGGER.error(e);
 		}
 	}
 }
