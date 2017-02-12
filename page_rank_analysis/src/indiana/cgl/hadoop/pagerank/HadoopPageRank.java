@@ -59,7 +59,7 @@ public class HadoopPageRank extends Configured implements Tool {
 		/////////////////////////////////////////////////////////////
 		// convert elements in the adjacency matrix format into (key, value)
 		///////////////////////////////////////////////////////////// pairs
-		Job job1 = Job.getInstance(config);
+		Job job1 = new Job(config);
 		job1.setJobName("CreateGraph");
 		FileSystem fs = FileSystem.get(config);
 
@@ -89,7 +89,7 @@ public class HadoopPageRank extends Configured implements Tool {
 		///////////////////////////////////////////////////// results converge
 		for (int i = 0; i < noIterations; i++) {
 			System.out.println("Hadoop PageRank iteration " + i + "...\n");
-			Job job2 = Job.getInstance(config);
+			Job job2 =new Job(config);
 			job2.setJobName("HadoopPageRank");
 			// Job job2 = new Job(config, "HadoopPageRank");
 			// config.setInt("numUrls", numUrls);
@@ -121,7 +121,7 @@ public class HadoopPageRank extends Configured implements Tool {
 		/////////////////////////////////////////////////////
 		// collect the (url_id,rank_value) tuple from output in stage 2
 
-		Job job3 = Job.getInstance(config);
+		Job job3 = new Job(config);
 		job3.setJobName("CleanUptResults");
 		// Job job3 = new Job(config, "CleanUptResults");
 

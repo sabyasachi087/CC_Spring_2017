@@ -5,11 +5,11 @@ import java.io.IOException;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 
 public class PageRankReduce extends Reducer<LongWritable, Text, LongWritable, Text> {
 
-	private Logger LOGGER = Logger.getLogger(PageRankReduce.class);
+//	private Logger LOGGER = Logger.getLogger(PageRankReduce.class);
 
 	public void reduce(LongWritable key, Iterable<Text> values, Context context)
 			throws IOException, InterruptedException {
@@ -43,7 +43,7 @@ public class PageRankReduce extends Reducer<LongWritable, Text, LongWritable, Te
 		} // end for loop
 		sumOfRankValues = (0.85 * sumOfRankValues) + 0.15 * ((1.0) / (double) numUrls);
 		if (sourceUrlsList.length() == 0) {
-			LOGGER.info("Key  " + key.get() + " has no source !!Assigning self rank ...  ");
+	//		LOGGER.info("Key  " + key.get() + " has no source !!Assigning self rank ...  ");
 			sumOfRankValues = selfRank;
 			context.write(key, new Text(String.valueOf(sumOfRankValues)));
 		} else {

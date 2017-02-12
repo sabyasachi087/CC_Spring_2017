@@ -13,9 +13,9 @@ public class InMemoryDataStore {
 	private InMemoryDataStore() {
 	}
 
-	private static final List<Pair<LongWritable, Text>> CREATE_GRAPH_OUTPUT = new ArrayList<>();
-	private static final List<Pair<LongWritable, Text>> PAGE_RANK_OUTPUT = new ArrayList<>();
-	private static final List<Pair<LongWritable, DoubleWritable>> CLEAN_UP_OUTPUT = new ArrayList<>();
+	private static final List<Pair<LongWritable, Text>> CREATE_GRAPH_OUTPUT = new ArrayList<Pair<LongWritable, Text>>();
+	private static final List<Pair<LongWritable, Text>> PAGE_RANK_OUTPUT = new ArrayList<Pair<LongWritable, Text>>();
+	private static final List<Pair<LongWritable, DoubleWritable>> CLEAN_UP_OUTPUT = new ArrayList<Pair<LongWritable, DoubleWritable>>();
 
 	public static void addGraphOutput(List<Pair<LongWritable, Text>> datas) {
 		for (Pair<LongWritable, Text> data : datas) {

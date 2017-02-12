@@ -41,7 +41,7 @@ public class TestCreateGraph {
 
 	
 	private List<Pair<LongWritable, Text>> getInputs() {
-		List<Pair<LongWritable, Text>> inputs = new ArrayList<>();
+		List<Pair<LongWritable, Text>> inputs = new ArrayList<Pair<LongWritable, Text>>();
 		inputs.add(new Pair<LongWritable, Text>(new LongWritable(), new Text("0")));
 		inputs.add(new Pair<LongWritable, Text>(new LongWritable(), new Text("1 2")));
 		inputs.add(new Pair<LongWritable, Text>(new LongWritable(), new Text("2 1")));
@@ -59,7 +59,7 @@ public class TestCreateGraph {
 	@SuppressWarnings("unused")
 	private List<Pair<LongWritable, Text>> readInputs() {
 		String thisLine = null;
-		List<Pair<LongWritable, Text>> inputs = new ArrayList<>();
+		List<Pair<LongWritable, Text>> inputs = new ArrayList<Pair<LongWritable, Text>>();
 		try {
 			InputStream file = this.getClass().getResourceAsStream("/pagerank5000g50.input.0");
 			Reader reader = new InputStreamReader(file);
