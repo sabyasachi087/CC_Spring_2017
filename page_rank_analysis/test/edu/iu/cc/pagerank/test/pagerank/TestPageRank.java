@@ -30,8 +30,26 @@ public class TestPageRank {
 
 	public void testMapReduce() throws IOException {
 		this.mapReduceDriver.withAll(InMemoryDataStore.getGraphOutput()).getConfiguration().setInt("numUrls", 11);
-		List<Pair<LongWritable, Text>> output = this.mapReduceDriver.run();
+		List<Pair<LongWritable, Text>> output = this.mapReduceDriver.run();		
 		InMemoryDataStore.addPageRankOutput(output);
+		this.mapReduceDriver.resetOutput();
+		for (int i = 0; i < 10; i++) {
+			this.mapReduceDriver.resetOutput();
+			this.init();
+			this.mapReduceDriver.withAll(InMemoryDataStore.getPageRankOutput()).getConfiguration().setInt("numUrls",
+					11);
+			output = this.mapReduceDriver.run();
+			InMemoryDataStore.flushPageRankOutput();
+			/*synchronized (this) {
+				try {
+					System.gc();
+					System.out.println("Calling gc after iteration : " + i);
+					TimeUnit.SECONDS.sleep(30);
+				} catch (Exception ex) {
+				}
+			}*/
+			InMemoryDataStore.addPageRankOutput(output);
+		}
 	}
 
 }

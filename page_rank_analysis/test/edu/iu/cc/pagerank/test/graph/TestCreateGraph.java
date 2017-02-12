@@ -1,6 +1,10 @@
 package edu.iu.cc.pagerank.test.graph;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +39,7 @@ public class TestCreateGraph {
 		InMemoryDataStore.addGraphOutput(output);
 	}
 
+	
 	private List<Pair<LongWritable, Text>> getInputs() {
 		List<Pair<LongWritable, Text>> inputs = new ArrayList<>();
 		inputs.add(new Pair<LongWritable, Text>(new LongWritable(), new Text("0")));
@@ -48,6 +53,24 @@ public class TestCreateGraph {
 		inputs.add(new Pair<LongWritable, Text>(new LongWritable(), new Text("8 1 4")));
 		inputs.add(new Pair<LongWritable, Text>(new LongWritable(), new Text("9 4")));
 		inputs.add(new Pair<LongWritable, Text>(new LongWritable(), new Text("10 4")));
+		return inputs;
+	}
+
+	@SuppressWarnings("unused")
+	private List<Pair<LongWritable, Text>> readInputs() {
+		String thisLine = null;
+		List<Pair<LongWritable, Text>> inputs = new ArrayList<>();
+		try {
+			InputStream file = this.getClass().getResourceAsStream("/pagerank5000g50.input.0");
+			Reader reader = new InputStreamReader(file);
+			// open input stream test.txt for reading purpose.
+			BufferedReader br = new BufferedReader(reader);
+			while ((thisLine = br.readLine()) != null) {
+				inputs.add(new Pair<LongWritable, Text>(new LongWritable(), new Text(thisLine)));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return inputs;
 	}
 
