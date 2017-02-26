@@ -72,6 +72,10 @@ public class RunnerMap extends Mapper<String, String, IntWritable, Text> {
 
 	private String localDB = "";
 	private String localBlastProgram = "";
+	// This should have been come from the input, but for now it has been
+	// hardcoded, change as per the installation folder of the executables
+	private String localPathDir = "/home/sabyasachi/Documents/Indiana_University/Spring_2017/Cloud_Computing/Lab3/dwl/";
+	private Integer INPUT_FILE_COUNT = 1;
 
 	@Override
 	public void setup(Context context) throws IOException {
@@ -79,11 +83,13 @@ public class RunnerMap extends Mapper<String, String, IntWritable, Text> {
 		// /Path[] local = DistributedCache.getLocalCacheArchives(conf);
 		// test for 2.6 + version
 		{
-			int count = 0;
 			for (URI fileUri : context.getCacheFiles()) {
-				System.out.println("File Uri [" + (count++) + "] ::->   " + fileUri.toString());
+				localDB = fileUri.toString();
+				localBlastProgram = localDB;
 			}
 		}
+		localBlastProgram = localPathDir;
+
 		/**
 		 * Write your code here get two absolute filepath for localDB and
 		 * localBlastBinary
@@ -101,21 +107,35 @@ public class RunnerMap extends Mapper<String, String, IntWritable, Text> {
 		String cmdArgs = conf.get(DataAnalysis.PARAMETERS);
 		String outputDir = conf.get(DataAnalysis.OUTPUT_DIR);
 		String workingDir = conf.get(DataAnalysis.WORKING_DIR);
-
+		String dbName = conf.get(DataAnalysis.DB_NAME);
+		this.localDB = localPathDir + "db" + File.separator + dbName;
 		System.out.println("the map key : " + key);
 		System.out.println("the value path : " + value.toString());
 		System.out.println("Local DB : " + this.localDB);
+		System.out.println("programDir : " + programDir);
+		System.out.println("execName : " + execName);
 
 		// We have the full file names in the value.
-		String localInputFile = "";
-		String outFile = "";
-		String stdOutFile = "";
-		String stdErrFile = "";
-		String fileNameOnly = "";
-		if (10 % 2 == 0) {
-			System.out.println("Returning for now .... ");
-			return;
-		}
+		String inputFileName = "";
+		String fileNameOnly = "final_file";
+		String outFile = "sabyroyc_out";
+		String stdOutFile = "sabyroyc_stdout";
+		String stdErrFile = "sabyroyc_stderr";
+
+		INPUT_FILE_COUNT = getCounter(value);
+		fileNameOnly = fileNameOnly + "_" + INPUT_FILE_COUNT + ".txt";
+		stdOutFile = stdOutFile + "_" + INPUT_FILE_COUNT + ".txt";
+		outFile = outFile + "_" + INPUT_FILE_COUNT + ".txt";
+		stdErrFile = stdErrFile + "_" + INPUT_FILE_COUNT + ".txt";
+		inputFileName = "input_" + (INPUT_FILE_COUNT) + ".txt";
+
+		String localInputFile = localPathDir + inputFileName;
+		System.out.println("Local input path = " + localInputFile);
+
+		/*
+		 * if (10 % 2 == 0) { System.out.println("Returning for now .... ");
+		 * return; }
+		 */
 		/**
 		 * Write your code to get localInputFile, outFile, stdOutFile and
 		 * stdErrFile
@@ -123,6 +143,7 @@ public class RunnerMap extends Mapper<String, String, IntWritable, Text> {
 
 		// download the file from HDFS
 		Path inputFilePath = new Path(value);
+		System.out.println("Input file path : " + inputFilePath.getName());
 		FileSystem fs = inputFilePath.getFileSystem(conf);
 		fs.copyToLocalFile(inputFilePath, new Path(localInputFile));
 
@@ -139,7 +160,7 @@ public class RunnerMap extends Mapper<String, String, IntWritable, Text> {
 
 		execCommand = this.localBlastProgram + File.separator + execName + " " + execCommand + " -db " + this.localDB;
 		// Create the external process
-
+		System.out.println("Final execute command = " + execCommand);
 		startTime = System.currentTimeMillis();
 
 		Process p = Runtime.getRuntime().exec(execCommand);
@@ -166,5 +187,12 @@ public class RunnerMap extends Mapper<String, String, IntWritable, Text> {
 		endTime = Double.toString(((System.currentTimeMillis() - startTime) / 1000.0));
 		System.out.println("Upload Result Finished in " + endTime + " seconds");
 
+	}
+
+	private Integer getCounter(String value) {
+		System.out.println("Getting file counter from " + value);
+		String cnt = value.charAt(value.length() - 4) + "";
+		System.out.println("Counter found = " + cnt);
+		return Integer.parseInt(cnt);
 	}
 }
