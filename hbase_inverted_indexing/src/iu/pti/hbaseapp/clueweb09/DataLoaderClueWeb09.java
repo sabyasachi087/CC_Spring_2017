@@ -10,6 +10,8 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
@@ -23,7 +25,9 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
-public class DataLoaderClueWeb09 {	
+import com.google.protobuf.Descriptors.FieldDescriptor.Type;
+
+public class DataLoaderClueWeb09 {
 	static class DlMapper extends Mapper<LongWritable, Text, ImmutableBytesWritable, Put> {
 		@Override
 		public void map(LongWritable key, Text inputWarcFilePath, Context context) throws IOException {
@@ -31,10 +35,10 @@ public class DataLoaderClueWeb09 {
 			// Each line is a local file system path to a .warc.gz file
 			GZIPInputStream gzInputStream = new GZIPInputStream(new FileInputStream(inputWarcFilePath.toString()));
 			DataInputStream inStream;
-		    inStream = new DataInputStream(gzInputStream);
-		    HTMLTextParser txtExtractor = new HTMLTextParser();
-			
-		    WarcRecord thisWarcRecord;
+			inStream = new DataInputStream(gzInputStream);
+			HTMLTextParser txtExtractor = new HTMLTextParser();
+
+			WarcRecord thisWarcRecord;
 			while ((thisWarcRecord = WarcRecord.readNextWarcRecord(inStream)) != null) {
 				// see if it's a response record
 				if (thisWarcRecord.getHeaderRecordType().equals("response")) {
@@ -50,21 +54,21 @@ public class DataLoaderClueWeb09 {
 						if (idx < 0) {
 							html = "";
 						} else {
-							html = html.substring(idx); 
+							html = html.substring(idx);
 						}
 					}
 					String content = txtExtractor.htmltoText(html);
 					if (content == null) {
 						continue;
 					}
-					
+
 					byte[] rowKey = getRowKeyFromTrecId(thisTRECID);
 					byte[] uriBytes = Bytes.toBytes(thisTargetURI);
 					byte[] contentBytes = Bytes.toBytes(content);
-					Put put = new Put(rowKey);
+					Put put = new Put(rowKey);					
 					put.add(Constants.CF_DETAILS_BYTES, Constants.QUAL_URI_BYTES, uriBytes);
 					put.add(Constants.CF_DETAILS_BYTES, Constants.QUAL_CONTENT_BYTES, contentBytes);
-					
+
 					try {
 						context.write(new ImmutableBytesWritable(rowKey), put);
 					} catch (InterruptedException e) {
@@ -78,8 +82,7 @@ public class DataLoaderClueWeb09 {
 	/**
 	 * Job configuration.
 	 */
-	public static Job configureJob(Configuration conf, String[] args)
-			throws IOException {
+	public static Job configureJob(Configuration conf, String[] args) throws IOException {
 		Path inputPath = new Path(args[0]);
 		Job job = new Job(conf, "ClueWeb09 data loader");
 		job.setJarByClass(DlMapper.class);
@@ -111,11 +114,12 @@ public class DataLoaderClueWeb09 {
 			System.exit(-1);
 		}
 		Job job = configureJob(conf, otherArgs);
-		System.exit(job.waitForCompletion(true) ? 0 : 1);		
+		System.exit(job.waitForCompletion(true) ? 0 : 1);
 	}
-	
+
 	/**
 	 * generate a table row key from a trecId
+	 * 
 	 * @param TrecId
 	 * @return
 	 */

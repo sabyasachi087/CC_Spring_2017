@@ -64,6 +64,7 @@ public class WordCountClueWeb09 {
 			Analyzer analyzer = Constants.analyzer;			
 			TokenStream ts = analyzer.tokenStream("dummyField", new StringReader(text));
 			CharTermAttribute charTermAttr = ts.addAttribute(CharTermAttribute.class);
+			ts.reset();
 			while (ts.incrementToken()) {
 				String termVal = charTermAttr.toString();
 				if (Helpers.isNumberString(termVal)) {
