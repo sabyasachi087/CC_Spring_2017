@@ -1,11 +1,10 @@
 package iu.pti.hbaseapp.clueweb09;
 
-import iu.pti.hbaseapp.Constants;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -23,29 +22,47 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
+import iu.pti.hbaseapp.Constants;
+
 public class FreqIndexBuilderClueWeb09 {
 	/**
 	 * Internal Mapper to be run by Hadoop.
 	 */
-	public static class FibMapper extends TableMapper<ImmutableBytesWritable, Writable> {		
+	public static class FibMapper extends TableMapper<ImmutableBytesWritable, Writable> {
 		@Override
-		protected void map(ImmutableBytesWritable rowKey, Result result, Context context) throws IOException, InterruptedException {
+		protected void map(ImmutableBytesWritable rowKey, Result result, Context context)
+				throws IOException, InterruptedException {
 			byte[] docIdBytes = rowKey.get();
 			byte[] contentBytes = result.getValue(Constants.CF_DETAILS_BYTES, Constants.QUAL_CONTENT_BYTES);
 			String content = Bytes.toString(contentBytes);
-			
-			// TODO: write your implementation for getting the term frequencies from each document, and generating Put objects for 
-			// clueWeb09IndexTable. 
-            // Hint: use the "getTermFreqs" function to count the frequencies of terms in content.
-            // The schema of the clueWeb09IndexTable is:
-            // row key: term, column family: "frequencies", qualifier: document Id, cell value: term frequency in the corresponding document
-            // Check iu.pti.hbaseapp.Constants for useful constant values.
-			
+
+			// TODO: write your implementation for getting the term frequencies
+			// from each document, and generating Put objects for
+			// clueWeb09IndexTable.
+			// Hint: use the "getTermFreqs" function to count the frequencies of
+			// terms in content.
+			// The schema of the clueWeb09IndexTable is:
+			// row key: term, column family: "frequencies", qualifier: document
+			// Id, cell value: term frequency in the corresponding document
+			// Check iu.pti.hbaseapp.Constants for useful constant values.
+
+			Map<String, Integer> data = getTermFreqs(content);
+
+			Put column;
+
+			for (Entry<String, Integer> entry : data.entrySet()) {
+				column = new Put(entry.getKey().getBytes());
+				column.add(Constants.CF_FREQUENCIES_BYTES, docIdBytes, Bytes.toBytes(entry.getValue()));
+				context.write(new ImmutableBytesWritable(entry.getKey().getBytes()), column);
+			}
+
 		}
 	}
-	
+
 	/**
-	 * get the terms, their frequencies and positions in a given string using a Lucene analyzer
+	 * get the terms, their frequencies and positions in a given string using a
+	 * Lucene analyzer
+	 * 
 	 * @param text
 	 * 
 	 */
@@ -60,9 +77,9 @@ public class FreqIndexBuilderClueWeb09 {
 				if (Helpers.isNumberString(termVal)) {
 					continue;
 				}
-				
+
 				if (freqs.containsKey(termVal)) {
-					freqs.put(termVal, freqs.get(termVal)+1);
+					freqs.put(termVal, freqs.get(termVal) + 1);
 				} else {
 					freqs.put(termVal, 1);
 				}
@@ -71,28 +88,28 @@ public class FreqIndexBuilderClueWeb09 {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		return freqs; 
+
+		return freqs;
 	}
-	
-	
+
 	/**
 	 * Job configuration.
 	 */
 	public static Job configureJob(Configuration conf, String[] args) throws IOException {
 		conf.set("mapred.map.tasks.speculative.execution", "false");
 		conf.set("mapred.reduce.tasks.speculative.execution", "false");
-	    Scan scan = new Scan();
-	    scan.addColumn(Constants.CF_DETAILS_BYTES, Constants.QUAL_CONTENT_BYTES);
-		Job job = new Job(conf,	"Building freq_index from " + Constants.CLUEWEB09_DATA_TABLE_NAME);
+		Scan scan = new Scan();
+		scan.addColumn(Constants.CF_DETAILS_BYTES, Constants.QUAL_CONTENT_BYTES);
+		Job job = new Job(conf, "Building freq_index from " + Constants.CLUEWEB09_DATA_TABLE_NAME);
 		job.setJarByClass(FibMapper.class);
-		TableMapReduceUtil.initTableMapperJob(Constants.CLUEWEB09_DATA_TABLE_NAME, scan, FibMapper.class, ImmutableBytesWritable.class, Writable.class, job, true);
+		TableMapReduceUtil.initTableMapperJob(Constants.CLUEWEB09_DATA_TABLE_NAME, scan, FibMapper.class,
+				ImmutableBytesWritable.class, Writable.class, job, true);
 		TableMapReduceUtil.initTableReducerJob(Constants.CLUEWEB09_INDEX_TABLE_NAME, null, job);
 		job.setNumReduceTasks(0);
-		
+
 		return job;
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		Configuration conf = HBaseConfiguration.create();
 		String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
