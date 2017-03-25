@@ -40,7 +40,7 @@ public class FreqIndexBuilderClueWeb09 {
 			Map<String, Integer> data = getTermFreqs(content);
 
 			Put column;
-			Cell cellDocId, cellFrequency,cell;
+			Cell cell;
 			for (Entry<String, Integer> entry : data.entrySet()) {
 				column = new Put(entry.getKey().getBytes());
 				/*cellDocId = CellUtil.createCell(entry.getKey().getBytes(), Constants.CF_FREQUENCIES_BYTES,

@@ -3,10 +3,12 @@ package iu.pti.hbaseapp.clueweb09;
 import java.util.ArrayList;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.BufferedMutator;
@@ -32,7 +34,7 @@ public class TableCreatorClueWeb09 {
 			admin.deleteTable(TableName.valueOf(Constants.CW09_DATA_TABLE_BYTES));
 		}
 
-		HTableDescriptor tableDes = new HTableDescriptor(HTableDescriptor.parseFrom(Constants.CW09_DATA_TABLE_BYTES));
+		HTableDescriptor tableDes = new HTableDescriptor(TableName.valueOf(Constants.CW09_DATA_TABLE_BYTES));
 		// HTableDescriptor tableDes = new
 		// HTableDescriptor(Constants.CW09_DATA_TABLE_BYTES);
 		HColumnDescriptor cfDes = new HColumnDescriptor(Constants.CF_DETAILS_BYTES);
@@ -54,19 +56,27 @@ public class TableCreatorClueWeb09 {
 		byte[] rowKey1 = Bytes.toBytes("1");
 		byte[] rowKey2 = Bytes.toBytes("2");
 		Put row1 = new Put(rowKey1);
-		row1.add(CellUtil.createCell(Constants.CF_DETAILS_BYTES, Constants.QUAL_URI_BYTES, uri1Bytes));
+		Cell cell = CellUtil.createCell(rowKey1, Constants.CF_DETAILS_BYTES, Constants.QUAL_URI_BYTES,
+				System.currentTimeMillis(), KeyValue.Type.Put.getCode(), uri1Bytes);
+		row1.add(cell);
 		// row1.add(Constants.CF_DETAILS_BYTES, Constants.QUAL_URI_BYTES,
 		// uri1Bytes);
-		row1.add(CellUtil.createCell(Constants.CF_DETAILS_BYTES, Constants.QUAL_CONTENT_BYTES, content1Bytes));
+		cell = CellUtil.createCell(rowKey1, Constants.CF_DETAILS_BYTES, Constants.QUAL_CONTENT_BYTES,
+				System.currentTimeMillis(), KeyValue.Type.Put.getCode(), content1Bytes);
+		row1.add(cell);
 		// row1.add(Constants.CF_DETAILS_BYTES, Constants.QUAL_CONTENT_BYTES,
 		// content1Bytes);
 		Put row2 = new Put(rowKey2);
 		// row2.add(Constants.CF_DETAILS_BYTES, Constants.QUAL_URI_BYTES,
 		// uri2Bytes);
-		row2.add(CellUtil.createCell(Constants.CF_DETAILS_BYTES, Constants.QUAL_URI_BYTES, uri2Bytes));
+		cell = CellUtil.createCell(rowKey2, Constants.CF_DETAILS_BYTES, Constants.QUAL_URI_BYTES,
+				System.currentTimeMillis(), KeyValue.Type.Put.getCode(), uri2Bytes);
+		row2.add(cell);
 		// row2.add(Constants.CF_DETAILS_BYTES, Constants.QUAL_CONTENT_BYTES,
 		// content2Bytes);
-		row2.add(CellUtil.createCell(Constants.CF_DETAILS_BYTES, Constants.QUAL_CONTENT_BYTES, content2Bytes));
+		cell = CellUtil.createCell(rowKey2, Constants.CF_DETAILS_BYTES, Constants.QUAL_CONTENT_BYTES,
+				System.currentTimeMillis(), KeyValue.Type.Put.getCode(), content2Bytes);
+		row2.add(cell);
 		ArrayList<Row> ops = new ArrayList<Row>(2);
 		ops.add(row1);
 		ops.add(row2);
@@ -119,7 +129,7 @@ public class TableCreatorClueWeb09 {
 			admin.deleteTable(TableName.valueOf(Constants.WORD_COUNT_TABLE_BYTES));
 		}
 
-		HTableDescriptor tableDes = new HTableDescriptor(HTableDescriptor.parseFrom(Constants.WORD_COUNT_TABLE_BYTES));
+		HTableDescriptor tableDes = new HTableDescriptor(TableName.valueOf(Constants.WORD_COUNT_TABLE_BYTES));
 		// HTableDescriptor tableDes = new
 		// HTableDescriptor(Constants.WORD_COUNT_TABLE_BYTES);
 		HColumnDescriptor cfDes = new HColumnDescriptor(Constants.CF_FREQUENCIES_BYTES);
@@ -137,7 +147,7 @@ public class TableCreatorClueWeb09 {
 			admin.deleteTable(TableName.valueOf(Constants.CW09_INDEX_TABLE_BYTES));
 		}
 
-		HTableDescriptor tableDes = new HTableDescriptor(HTableDescriptor.parseFrom(Constants.CW09_INDEX_TABLE_BYTES));
+		HTableDescriptor tableDes = new HTableDescriptor(TableName.valueOf(Constants.CW09_INDEX_TABLE_BYTES));
 		// HTableDescriptor tableDes = new
 		// HTableDescriptor(Constants.CW09_INDEX_TABLE_BYTES);
 		HColumnDescriptor cfDes = new HColumnDescriptor(Constants.CF_FREQUENCIES_BYTES);
@@ -155,8 +165,7 @@ public class TableCreatorClueWeb09 {
 			admin.deleteTable(TableName.valueOf(Constants.CW09_PAGERANK_TABLE_BYTES));
 		}
 
-		HTableDescriptor tableDes = new HTableDescriptor(
-				HTableDescriptor.parseFrom(Constants.CW09_PAGERANK_TABLE_BYTES));
+		HTableDescriptor tableDes = new HTableDescriptor(TableName.valueOf(Constants.CW09_PAGERANK_TABLE_BYTES));
 		// HTableDescriptor tableDes = new
 		// HTableDescriptor(Constants.CW09_PAGERANK_TABLE_BYTES);
 		HColumnDescriptor cfDes = new HColumnDescriptor(Constants.CF_PAGERANK_BYTES);
@@ -183,7 +192,7 @@ public class TableCreatorClueWeb09 {
 		Configuration hbaseConfig = HBaseConfiguration.create();
 		Connection hbaseConn = ConnectionFactory.createConnection(hbaseConfig);
 		Admin admin = hbaseConn.getAdmin();
-		//HBaseAdmin admin = new HBaseAdmin(hbaseConfig);
+		// HBaseAdmin admin = new HBaseAdmin(hbaseConfig);
 
 		if (args.length == 0) {
 			createAllTables(admin, hbaseConfig);
