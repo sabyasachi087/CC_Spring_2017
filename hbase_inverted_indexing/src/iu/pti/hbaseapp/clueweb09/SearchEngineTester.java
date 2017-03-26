@@ -86,7 +86,7 @@ public class SearchEngineTester {
         byte[] keywordBytes = Bytes.toBytes(keyword);
 		Get gIndex = new Get(keywordBytes);
         Result indexRow = indexTable.get(gIndex);
-		
+        Result dataTableRow, prTableRow;
         // loop through the document IDs in the row. Recall the schema of the clueWeb09IndexTable:
         // row key: term (keyword), column family: "frequencies", qualifier: document ID, cell value: term frequency in the corresponding document
 		int pageCount = 0;
@@ -98,11 +98,22 @@ public class SearchEngineTester {
 
 			// Write your codes for the main part of implementation here
             // Step 1: get the document ID of one page, as well as the keyword's frequency in that page
-			
+			pageDocId = Bytes.toString(kv.getQualifier());
+			freq = Bytes.toInt(kv.getValue());
             // Step 2: get the URI of the page from clueWeb09DataTable
-			
+			dataTableRow = dataTable.get(new Get(Bytes.toBytes(pageDocId)));
+			for (KeyValue kvDataTable : dataTableRow.list()) {
+				if (Bytes.toString(kvDataTable.getQualifier()).equalsIgnoreCase("URI")) {
+					pageUri = Bytes.toString(kvDataTable.getValue());
+					break;
+				}
+			}
             // Step 3: get the page rank value of this page from clueWeb09PageRankTable
-		
+			prTableRow = prTable.get(new Get(Bytes.toBytes(pageDocId)));
+			for (KeyValue prTableCell : prTableRow.list()) {
+				pageRank = Bytes.toFloat(prTableCell.getQualifier());
+				break;
+			}
 		    // END of your code
 
             // Use the heap to select the top 20 pages according to page rank
