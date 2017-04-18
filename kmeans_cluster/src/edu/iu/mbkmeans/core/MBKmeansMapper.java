@@ -1,4 +1,4 @@
-package edu.iu.kmeans.allreduce;
+package edu.iu.mbkmeans.core;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,7 +23,7 @@ import edu.iu.harp.example.DoubleArrPlus;
 import edu.iu.harp.partition.Partition;
 import edu.iu.harp.partition.Table;
 import edu.iu.harp.resource.DoubleArray;
-import edu.iu.kmeans.common.KMeansConstants;
+import edu.iu.mkmeans.common.KMeansConstants;
 
 public class MBKmeansMapper extends CollectiveMapper<String, String, Object, Object> {
 

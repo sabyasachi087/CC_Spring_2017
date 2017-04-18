@@ -1,4 +1,4 @@
-package edu.iu.kmeans.common;
+package edu.iu.mkmeans.common;
 
 public class KMeansConstants {
 	public static final String JOB_ID = "job_id";

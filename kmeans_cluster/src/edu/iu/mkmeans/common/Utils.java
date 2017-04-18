@@ -1,4 +1,4 @@
-package edu.iu.kmeans.common;
+package edu.iu.mkmeans.common;
 
 import java.io.BufferedWriter;
 import java.io.File;
