@@ -42,6 +42,9 @@ public class DataFileGenerator {
 						if (i != (nbrOfPoints - 1))
 							bw.newLine();
 					} else {
+						if (j == 0) {
+							bw.write((i+1) + " ");
+						}
 						bw.write(point + " ");
 					}
 				}

@@ -4,8 +4,10 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
@@ -40,7 +42,8 @@ public class MBKMeansRunner extends Configured implements Tool {
 		prop.localCentroidFilePath = args[4];
 		Job mbkJob = this.configureMBK(getConf(), prop);
 		if (mbkJob.waitForCompletion(true)) {
-			System.out.println("***************************************************MBKMeans Ended***********************************");
+			System.out.println(
+					"***************************************************MBKMeans Ended***********************************");
 		}
 		return 0;
 	}
@@ -80,9 +83,13 @@ public class MBKMeansRunner extends Configured implements Tool {
 		jobConfig.setInt(KMeansConstants.NUM_ITERATONS, prop.iterations);
 		jobConfig.setInt(KMeansConstants.DIMENSIONS, prop.dimensions);
 		jobConfig.setInt(KMeansConstants.MIN_BATCH_SIZE, prop.batchSize);
-		job.setInputFormatClass(FileInputFormat.class);
+		job.setInputFormatClass(TextInputFormat.class);
 		job.setJarByClass(MBKMeansRunner.class);
 		job.setMapperClass(MBKmeansMapper.class);
+		job.setNumReduceTasks(0);
+		jobConfig.set("mapreduce.framework.name", "map-collective");
+		jobConfig.setInt("mapreduce.job.max.split.locations", 10);
+		((JobConf) jobConfig).setNumMapTasks(2);
 		return job;
 	}
 
