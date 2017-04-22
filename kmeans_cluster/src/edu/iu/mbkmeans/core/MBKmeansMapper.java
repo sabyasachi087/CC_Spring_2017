@@ -109,8 +109,6 @@ public class MBKmeansMapper extends CollectiveMapper<LongWritable, Text, Text, T
 				}
 				learningRate = (1d / centroidCountMap.get(centroidPartitionId));
 				this.applyGradientStep(dataPoint.get(), centroid, learningRate);
-			} else {
-				LOGGER.info("Skipping gradient for centroid partition id " + centroidPartitionId);
 			}
 		}
 		return centroid;
